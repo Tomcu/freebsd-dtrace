@@ -10,13 +10,9 @@
 /* Version: 0.4b */
 
 dmu_buf_hold_array_by_dnode:entry
-/args[0]->dn_objset->os_dsl_dataset && args[3] / /* Reads */
+/args[0]->dn_bonustype != 44 && args[0]->dn_objset->os_dsl_dataset && args[3] / /* Reads */
 {
         this->ds = stringof(args[0]->dn_objset->os_dsl_dataset->ds_dir->dd_myname);
-        /*
-        * this->dn = stringof(copyin(args[0]->dn_objset->os_dsl_dataset->ds_dir->dd_parent, 256));
-        */
-        
         this->parent = stringof(args[0]->dn_objset->os_dsl_dataset->ds_dir->dd_parent->dd_myname);
         this->path = strjoin(strjoin(this->parent,"/"),this->ds); /* Dirty hack - parent/this format doesn't guarantee full path */
         @ior[this->path] = count();
@@ -26,7 +22,7 @@ dmu_buf_hold_array_by_dnode:entry
 }
 
 dmu_buf_hold_array_by_dnode:entry
-/args[0]->dn_objset->os_dsl_dataset && !args[3]/ /* Writes */
+/args[0]->dn_bonustype != 44 && args[0]->dn_objset->os_dsl_dataset && !args[3]/ /* Writes */
 {
         this->ds = stringof(args[0]->dn_objset->os_dsl_dataset->ds_dir->dd_myname);
         this->parent = stringof(args[0]->dn_objset->os_dsl_dataset->ds_dir->dd_parent->dd_myname);
